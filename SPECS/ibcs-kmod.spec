@@ -11,6 +11,8 @@ License:	Unknown
 URL:		http://sourceforge.net/projects/linux-abi/
 Source0:	http://sourceforge.net/p/linux-abi/patches/_discuss/thread/59d369be/bf53/attachment/ibcs-3.9.2.tar.gz
 
+Patch0:         ibcs-fix-build-problems.patch
+
 BuildRequires:	%{_bindir}/kmodtool
 ExclusiveArch:  i686 x86_64
 
@@ -24,7 +26,9 @@ ExclusiveArch:  i686 x86_64
 Kernel module for foreign binary support
 
 %prep
-%setup -q -n ibcs-%{version}
+%setup -q -c 
+
+%patch0 -d ibcs-%{version} -p1
 
 # apply patches and do other stuff here
 # pushd foo-%{version}
@@ -39,23 +43,31 @@ kmodtool  --target %{_target_cpu}  --repo %{repo} --kmodname %{name} %{?buildfor
 
 
 for kernel_version in %{?kernel_versions} ; do
-    cp -a ${name}-%{version} _kmod_build_${kernel_version%%___*}
+    cp -a ibcs-%{version} _kmod_build_${kernel_version%%___*}
 done
 
 %build
 for kernel_version in %{?kernel_versions}; do
-    make %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS=${PWD}/_kmod_build_${kernel_version%%___*} modules
+    make %{?_smp_mflags} -C "${kernel_version##*___}" ABI_DIR=${PWD}/_kmod_build_${kernel_version%%___*} M=${PWD}/_kmod_build_${kernel_version%%___*} modules
 done
 
 %install
 for kernel_version in %{?kernel_versions}; do
-    make install DESTDIR=${RPM_BUILD_ROOT} KMODPATH=%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/util/abi_util.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/abi_util.ko
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/lcall/abi_lcall.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/abi_lcall.ko
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/coff/binfmt_coff.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/binfmt_coff.ko
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/xout/binfmt_xout.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/binfmt_xout.ko
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/svr4/abi_svr4.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/abi_svr4.ko
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/cxenix/abi_cxenix.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/abi_cxenix.ko
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/sco/abi_sco.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/abi_sco.ko
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/ibcs/abi_ibcs.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/abi_ibcs.ko
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/isc/abi_isc.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/abi_isc.ko
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/solaris/abi_solaris.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/abi_solaris.ko
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/uw7/abi_uw7.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/abi_uw7.ko
+    install -D -m 744 _kmod_build_${kernel_version%%___*}/wyse/abi_wyse.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/abi_wyse.ko
     # install -D -m 755 _kmod_build_${kernel_version%%___*}/foo/foo.ko  ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/foo.ko
 done
 %{?akmod_install}
-
-%files
-#%doc
 
 %changelog
 

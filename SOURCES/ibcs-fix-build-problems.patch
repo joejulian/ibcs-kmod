@@ -1,0 +1,33 @@
+diff -u -r a/cxenix/signal.c b/cxenix/signal.c
+--- a/cxenix/signal.c	2011-03-07 22:27:52.000000000 -0500
++++ b/cxenix/signal.c	2013-10-10 22:46:47.433008808 -0400
+@@ -4,6 +4,7 @@
+ #include <linux/kernel.h>
+ #include <linux/personality.h>
+ #include <linux/sched.h>
++#include <linux/unistd.h>
+ #include <asm/uaccess.h>
+ 
+ #include "../include/util/trace.h"
+diff -u -r a/lcall/lcall.c b/lcall/lcall.c
+--- a/lcall/lcall.c	2011-04-19 00:44:48.000000000 -0400
++++ b/lcall/lcall.c	2013-10-10 22:47:43.756999719 -0400
+@@ -34,15 +34,18 @@
+ #include <linux/personality.h>
+ #include <linux/sched.h>
+ #include <linux/slab.h>
++#include <linux/unistd.h>
+ #include <asm/uaccess.h>
+ #include <asm/desc.h>
+ #include <asm/msr.h>
+ 
++#if 0
+ #ifdef	CONFIG_XEN
+ #include <asm/xen/hypervisor.h>
+ #include <xen/page.h>
+ #include <xen/events.h>
+ #endif
++#endif
+ 
+ #include "../include/abi_reg.h"
+ #include "../include/util/errno.h"
