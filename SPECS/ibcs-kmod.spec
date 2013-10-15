@@ -7,7 +7,7 @@ Version:	3.9.2
 Release:	1%{?dist}
 Summary:	Provides foreign binary compatibility in Linux
 Group:          System Environment/Kernel
-License:	Unknown
+License:	GPLv2
 URL:		http://sourceforge.net/projects/linux-abi/
 Source0:	http://sourceforge.net/p/linux-abi/patches/_discuss/thread/59d369be/bf53/attachment/ibcs-3.9.2.tar.gz
 
